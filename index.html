@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug bounty Dorks</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffffff;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #4f46e5;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 15px;
+            font-size: 1.25rem;
+            width: 300px;
+            border: 1px solid #4f46e5;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.25rem;
+            background-color: #4f46e5;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #4338ca;
+        }
+
+        a {
+            color: #4f46e5;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #4338ca;
+        }
+
+        #securityQueries {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #madeBy {
+            margin-top: 50px;
+            font-size: 1rem;
+            color: #6b7280;
+            opacity: 0.8;
+        }
+
+        .loveBy {
+            font-size: 1rem;
+            color: #6b7280;
+            opacity: 0.8;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto text-center">
+        <h1 class="mt-8 mb-6 text-4xl font-bold">Bug bounty Dorks !</h1>
+        <p class="text-xl mb-4">Enter your target website below:</p>
+        <input type="text" id="websiteInput" placeholder="Enter target website" class="mb-6">
+        <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded" onclick="generateQueries()">Generate Search Queries</button>
+
+        <div id="securityQueries" class="mt-8"></div>
+
+        <p id="madeBy" class="mt-8">Made with ❤ by <a href="https://twitter.com/jalwan0x" target="_blank">Jalwan</a></p>
+    </div>
+
+    <script>
+        function generateQueries() {
+            var website = document.getElementById('websiteInput').value;
+            if (website.trim() === "") {
+                alert("Please enter a target website");
+                return;
+            }
+
+            var queries = [
+                { name: 'Broad domain search w/ negative search', query: 'site:' + website + ' -www -shop -share -ir -mfa' },
+                { name: 'PHP extension w/ parameters', query: 'site:' + website + ' ext:php inurl:?' },
+                { name: 'Disclosed XSS and Open Redirects', query: 'site:openbugbounty.org inurl:reports intext:"' + website + '"' },
+                { name: 'Juicy Extensions', query: 'site:"' + website + '" ext:log | ext:txt | ext:conf | ext:cnf | ext:ini | ext:env | ext:sh | ext:bak | ext:backup | ext:swp | ext:old | ext:~ | ext:git | ext:svn | ext:htpasswd | ext:htaccess' },
+                { name: 'XSS prone parameters', query: 'inurl:q= | inurl:s= | inurl:search= | inurl:query= | inurl:keyword= | inurl:lang= inurl:& site:' + website },
+                { name: 'Open Redirect prone parameters', query: 'inurl:url= | inurl:return= | inurl:next= | inurl:redirect= | inurl:redir= | inurl:ret= | inurl:r2= | inurl:page= inurl:& inurl:http site:' + website },
+                { name: 'SQLi Prone Parameters', query: 'inurl:id= | inurl:pid= | inurl:category= | inurl:cat= | inurl:action= | inurl:sid= | inurl:dir= inurl:& site:' + website },
+                { name: 'SSRF Prone Parameters', query: 'inurl:http | inurl:url= | inurl:path= | inurl:dest= | inurl:html= | inurl:data= | inurl:domain= | inurl:page= inurl:& site:' + website },
+                { name: 'LFI Prone Parameters', query: 'inurl:include | inurl:dir | inurl:detail= | inurl:file= | inurl:folder= | inurl:inc= | inurl:locate= | inurl:doc= | inurl:conf= inurl:& site:' + website },
+                { name: 'RCE Prone Parameters', query: 'inurl:cmd | inurl:exec= | inurl:query= | inurl:code= | inurl:do= | inurl:run= | inurl:read= | inurl:ping= inurl:& site:' + website },
+                { name: 'High % inurl keywords', query: 'inurl:config | inurl:env | inurl:setting | inurl:backup | inurl:admin | inurl:php site:' + website },
+                { name: 'Sensitive Parameters', query: 'inurl:email= | inurl:phone= | inurl:password= | inurl:secret= inurl:& site:' + website },
+            ];
+
+            var queriesContainer = document.getElementById('securityQueries');
+            queriesContainer.innerHTML = '';
+
+            queries.forEach(function(data) {
+                var link = document.createElement('a');
+                link.href = 'https://www.google.com/search?q=' + encodeURIComponent(data.query);
+                link.target = '_blank';
+                link.innerText = data.name;
+
+                queriesContainer.appendChild(link);
+                queriesContainer.appendChild(document.createElement('br'));
+            });
+        }
+        
+
+    </script>
+    <p class="text-xs text-center text-gray-600">
+    Inspired by 
+    <a href="https://github.com/TakSec/google-dorks-bug-bounty/" class="text-purple-600 hover:text-purple-700" target="_blank">TakSec</a>
+</p>
+</body>
+</html>
+
